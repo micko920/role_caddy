@@ -4,7 +4,6 @@
 # Variable configuration.
 - include_tasks: variables.yml
 
-
 - name: Ensure dependencies are installed.
   apt:
     name:
@@ -69,4 +68,3 @@
     state: "{{ caddy_state }}"
     enabled: "{{ caddy_enabled_at_boot }}"
   when: systemd_pid_1 is defined and systemd_pid_1
-
