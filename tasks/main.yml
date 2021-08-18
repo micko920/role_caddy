@@ -1,0 +1,72 @@
+---
+- include_tasks: is_systemd.yml
+
+# Variable configuration.
+- include_tasks: variables.yml
+
+
+- name: Ensure dependencies are installed.
+  apt:
+    name:
+      - debian-keyring
+      - debian-archive-keyring
+      - apt-transport-https
+      - gnupg2
+      - curl
+    state: present
+
+- name: Add caddy apt key.
+  apt_key:
+    url: "{{ caddy_apt_gpg_key }}"
+    id: "{{ caddy_apt_key_id }}"
+    state: present
+
+- name: Add caddy repository.
+  apt_repository:
+    repo: "{{ caddy_apt_repository }}"
+    state: present
+    update_cache: true
+
+- name: Ensure Caddy packages are installed.
+  apt:
+    name: "{{ caddy_packages }}"
+    state: present
+
+# - name: create caddy service instance
+#   import_role:
+#     name: micko920.role_createservice
+#   vars:
+#     service_list:
+#       - name: "caddy"
+#         description: "Caddy"
+#         documentation: "https://caddyserver.com/docs/"
+#         start_command: "/usr/bin/caddy run --environ --config /etc/caddy/Caddyfile"
+#         reload_command: "/usr/bin/caddy reload --config /etc/caddy/Caddyfile"
+#         type: "notify"
+#         user_name: "caddy"
+#         group_name: "caddy"
+#         after: "network.target network-online.target"
+#         requires: "network-online.target"
+#         extra_values:
+#           TimeoutStopSec: "5s"
+#           LimitNOFILE: "1048576"
+#           LimitNPROC: "512"
+#           PrivateTmp: "true"
+#           ProtectSystem: "full"
+#           AmbientCapabilities: "CAP_NET_BIND_SERVICE"
+#   when: systemd_pid_1 is defined and systemd_pid_1
+
+- name: configure caddy config
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ caddy_config_path }}/{{ item }}"
+  with_items:
+    - Caddyfile
+
+- name: Configure the caddy service.
+  systemd:
+    name: caddy
+    state: "{{ caddy_state }}"
+    enabled: "{{ caddy_enabled_at_boot }}"
+  when: systemd_pid_1 is defined and systemd_pid_1
+
