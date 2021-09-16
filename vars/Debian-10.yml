@@ -1,7 +1,7 @@
 ---
 __caddy_version: "1"
 __caddy_apt_repository: "deb https://dl.cloudsmith.io/public/caddy/stable/deb/debian buster main"
-__caddy_bin_path: "/usr/lib/caddy/bin"
+__caddy_bin_path: "/usr/bin/caddy"
 __caddy_config_path: "/etc/caddy"
 __caddy_packages:
   - caddy
