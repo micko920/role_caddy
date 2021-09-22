@@ -18,6 +18,7 @@ platforms:
       - /tmp
     exposed_ports:
       - 80
+      - 443
       - 3838
       - 8080
       - 8787
